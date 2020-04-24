@@ -98,7 +98,9 @@ function main () {
         }
     }
 
-    // starting listener loop to check if on a video watch page AND the page has loaded the necessary info
+    // starting listener loop to wait for navigation change,
+    // check if on video watch page,
+    // and finally wait for YouTube's dynamic page to finish loading
     window.setInterval(
         ()=>{
             if(oldURL == window.location.href) return;
@@ -106,16 +108,12 @@ function main () {
             oldURL = window.location.href;
             console.log("New URL: " + oldURL);
 
-            //console.log("Checking for loaded element...");
-            // # if "text-container" exists, then video info has been loaded
-            // # if location.href includes 'watch', then user is on a video page
-            //console.log("text-container exists: " + document.getElementById("text-container"));
-            //console.log("on a watch page: " + window.location.href.includes('watch'));
             if(window.location.href.includes('watch')){
-                intervalID = window.setInterval( // polling loop to wait for loaded info
+                intervalID = window.setInterval( // polling loop to wait for page loading
                     ()=>{
                         if(document.getElementById("description")){ // page elements loaded if element with id=description exists
-                            updateLink();
+                            console.log("Waiting for content to load.");
+                            updateLink(); // proceed
                         }
                     },
                     100
