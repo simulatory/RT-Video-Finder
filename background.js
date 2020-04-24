@@ -1,15 +1,13 @@
 function main () {
-    console.log("________________________________");
     console.log("RT Video Finder Extension Loaded");
-    console.log("________________________________");
 
-    rtChannels = ["LetsPlay", "Rooster Teeth", "Achievement Hunter"];
+    rtChannels = ["LetsPlay", "Rooster Teeth", "Achievement Hunter", "Inside Gaming", "Funhaus", "Cow Chop"];
 
     oldURL = "";
+    intervalID = 0;
 
-    // gets query parameters from the URL
-    // (e.g. "...?a=2&b=hello" returns {a=2, b='hello'})
-    //obj = getURLParams("blablabla?a=2&var2=bla")
+    // returns object of query strings from the URL
+    // (e.g. "...?a=2&b=hello" returns {a='2', b='hello'})
     function getURLParams(urlString){
         retObj = {};
         i = 0;
@@ -60,11 +58,18 @@ function main () {
     function updateLink(){
         
         console.log("updating link");
+        window.clearInterval(intervalID);
 
-        //console.log("Channel name:");
-        //console.log(document.getElementById("text-container").childNodes[1].firstChild.innerText);
-        // getting channel name from page and checking if it's a Rooster Teeth associated channel:
-        if(existsIn(document.getElementById("text-container").childNodes[1].firstChild.innerText, rtChannels)){
+        httpRequest = new XMLHttpRequest();
+        httpRequest.open( "GET", "https://www.youtube.com/oembed?url=http://www.youtube.com/watch?v=" +
+                                 getURLParams(window.location.href).v +
+                                 "&format=json", false); // synchronous request, simple but slow, shouldn't be an issue when called once per page load
+        httpRequest.send( null );
+        // JSON schema: {"author_url": ,"thumbnail_width": ,"width": ,"thumbnail_url": ,"version": ,"type": ,"provider_name": ,"title": ,"provider_url": ,"thumbnail_height": ,"height": ,"author_name": ,"html":}
+        videoData = JSON.parse(httpRequest.responseText);
+        console.log("Video Data:");
+        console.log(videoData);
+        if(existsIn(videoData.author_name, rtChannels)){
             console.log("RT Channel Detected, Linking");
             
             // creating element to insert link, if not created yet or has been deleted:
@@ -81,12 +86,12 @@ function main () {
             searchLinkContainer.innerHTML =
                 "<h1><a href=" + 
                 "https://roosterteeth.com/#search?term=" +
-                ((filterAlpha(document.getElementsByTagName("h1")[0].innerText)).split(' ').join('%20')) +
+                ((filterAlpha(videoData.title)).split(' ').join('%20')) +
                 ">Search Video on RT Site</a></h1>";
         } else {
-            //console.log("Non-RT Channel, Aborting");
+            console.log("Non-RT Channel, Aborting");
             if(document.getElementById("searchLinkContainer")){
-                //console.log("Cleaning up search link.");
+                console.log("Cleaning up search link.");
                 document.getElementById("searchLinkContainer").remove();
             }
             return;
@@ -99,16 +104,17 @@ function main () {
             if(oldURL == window.location.href) return;
 
             oldURL = window.location.href;
+            console.log("New URL: " + oldURL);
 
             //console.log("Checking for loaded element...");
             // # if "text-container" exists, then video info has been loaded
             // # if location.href includes 'watch', then user is on a video page
             //console.log("text-container exists: " + document.getElementById("text-container"));
             //console.log("on a watch page: " + window.location.href.includes('watch'));
-            if(document.getElementById("text-container") && window.location.href.includes('watch')){
+            if(window.location.href.includes('watch')){
                 intervalID = window.setInterval( // polling loop to wait for loaded info
                     ()=>{
-                        if(document.getElementById("description")){ // info loaded if element with id=description exists
+                        if(document.getElementById("description")){ // page elements loaded if element with id=description exists
                             updateLink();
                         }
                     },

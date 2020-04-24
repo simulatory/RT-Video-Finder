@@ -1,7 +1,7 @@
 {
     "name": "RT Video Finder",
-    "version": "0.1",
-    "description": "Generates a link to quickly search a YouTube video on the main Rooster Teeth site.",
+    "version": "1.0",
+    "description": "Generates a link on YouTube's video watch page to quickly search the video on the main Rooster Teeth site.",
     "permissions": ["*://*.youtube.com/watch*"],
     "content_scripts": [
         {
@@ -10,5 +10,11 @@
         "js": ["background.js"]
         }
     ],
+    "icons": {
+       "128": "icons/128.png"//,
+       //"16": "icons/16.png",
+       //"26": "icons/26.png",
+       //"48": "icons/48.png"
+    },
     "manifest_version": 2
   }
