@@ -1,3 +1,5 @@
+console.log(window.location.href);
+
 function main () {
     console.log("RT Video Finder Extension Loaded");
 
