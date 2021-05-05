@@ -77,11 +77,16 @@ function main () {
             // creating element to insert link, if not created yet or has been deleted:
             if(!document.getElementById("searchLinkContainer")){
                 searchLinkContainer = document.createElement('div');
+                metaContentsElement = document.getElementById("meta-contents");
+                metaContentsElement.parentElement.insertBefore(searchLinkContainer, metaContentsElement);
+                /*
+                Old method broken by YT site changes
                 listContainer = document.getElementById("list-container").parentElement;
                 listContainer.appendChild(searchLinkContainer);
                 listContainer.appendChild(listContainer.firstChild);
                 listContainer.appendChild(listContainer.firstChild);
                 listContainer.appendChild(listContainer.firstChild);
+                */
                 searchLinkContainer.id = "searchLinkContainer";
                 searchLinkContainer.margintop = "16px";
             }
